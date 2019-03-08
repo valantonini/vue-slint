@@ -21,6 +21,6 @@
     "@slack/client": "^4.10.0",
     "command-line-args": "^5.0.2",
     "minimist": "^1.2.0",
-    "node-stringbuilder": "^2.2.4"
+    "string-builder": "^0.1.6"
   }
 }

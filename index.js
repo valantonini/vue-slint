@@ -1,12 +1,29 @@
-const { WebClient } = require("@slack/client");
-const StringBuilder = require("node-stringbuilder");
+const {
+    WebClient
+} = require("@slack/client");
+const StringBuilder = require("string-builder");
 const CommandLineArgs = require("command-line-args")
 
-const optionDefinitions = [
-    { name: "token", alias: "t", type: String },
-    { name: "channel", alias: "c", type: String },
-    { name: "file", alias: "f", type: String },
-    { name: "fileStart", alias: "s", type: String },
+const optionDefinitions = [{
+        name: "token",
+        alias: "t",
+        type: String
+    },
+    {
+        name: "channel",
+        alias: "c",
+        type: String
+    },
+    {
+        name: "file",
+        alias: "f",
+        type: String
+    },
+    {
+        name: "fileStart",
+        alias: "s",
+        type: String
+    },
 ];
 
 const options = CommandLineArgs(optionDefinitions)
@@ -30,14 +47,16 @@ var lineReader = require("readline").createInterface({
     input: require("fs").createReadStream(options.file)
 });
 
-const stringBuilderOptions = { newline: "\r\n" };
-const stringBuilder = new StringBuilder(stringBuilderOptions);
+const stringBuilderOptions = {
+    newline: "\r\n"
+};
+let stringBuilder = new StringBuilder(stringBuilderOptions);
 
 lineReader.on("line", function (line) {
     if (line.startsWith(options.fileStart)) {
         if (stringBuilder.toString()) {
-            sendMessage(stringBuilder.toString());
-            stringBuilder.clear();
+            sendMessage(stringBuilder);
+            stringBuilder = new StringBuilder(stringBuilderOptions);
         }
         stringBuilder.appendLine(line);
     } else {
@@ -46,10 +65,11 @@ lineReader.on("line", function (line) {
 });
 
 lineReader.on("close", () => {
-    sendMessage(stringBuilder.toString());
+    sendMessage(stringBuilder);
 });
 
-function sendMessage(msg) {
+function sendMessage(stringBuilder) {
+    const msg = stringBuilder.toString();
     const web = new WebClient(options.token);
     (async () => {
         // See: https://api.slack.com/methods/files.upload
@@ -63,5 +83,8 @@ function sendMessage(msg) {
             // Specify channel(s) to upload the file to. Optional, unless also specifying a thread_ts value.
             // channels: "C123456"
         });
-    })();
+    })().catch((err) => {
+        console.error(err);
+        console.error(msg);
+    });
 }
