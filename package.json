@@ -2,9 +2,12 @@
   "name": "vue-slint",
   "version": "0.0.1",
   "description": "Node package to parse the output of Vue's eslint and results to slack",
-  "main": "index.js",
+  "main": "./build/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "exec": "node ./build/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc"
   },
   "keywords": [
     "slack",

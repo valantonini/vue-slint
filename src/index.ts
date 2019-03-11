@@ -1,3 +1,4 @@
+
 const {
     WebClient
 } = require("@slack/client");
@@ -5,42 +6,42 @@ const StringBuilder = require("string-builder");
 const CommandLineArgs = require("command-line-args")
 
 const optionDefinitions = [{
-        name: "token",
-        alias: "t",
-        type: String
-    },
-    {
-        name: "channel",
-        alias: "c",
-        type: String
-    },
-    {
-        name: "file",
-        alias: "f",
-        type: String
-    },
-    {
-        name: "fileStart",
-        alias: "s",
-        type: String
-    },
+    name: "token",
+    alias: "t",
+    type: String
+},
+{
+    name: "channel",
+    alias: "c",
+    type: String
+},
+{
+    name: "file",
+    alias: "f",
+    type: String
+},
+{
+    name: "fileStart",
+    alias: "s",
+    type: String
+},
 ];
 
 const options = CommandLineArgs(optionDefinitions)
 
 if (!options.token) {
     console.error("--token is required");
-    return 1;
+    process.exit(1);
 }
 
 if (!options.channel) {
     console.error("--channel is required");
-    return 1;
+    process.exit(1);
 }
 
 if (!options.file) {
     console.error("--file is required");
-    return 1;
+    process.exit(1);
 }
 
 var lineReader = require("readline").createInterface({
@@ -52,8 +53,8 @@ const stringBuilderOptions = {
 };
 let stringBuilder = new StringBuilder(stringBuilderOptions);
 
-lineReader.on("line", function (line) {
-    if (line.startsWith(options.fileStart)) {
+lineReader.on("line", function (line: string) {
+    if (line.startsWith("/") /*nix*/ || (line.length > 1 && line.charAt(1) === ":")) {
         if (stringBuilder.toString()) {
             sendMessage(stringBuilder);
             stringBuilder = new StringBuilder(stringBuilderOptions);
@@ -68,7 +69,7 @@ lineReader.on("close", () => {
     sendMessage(stringBuilder);
 });
 
-function sendMessage(stringBuilder) {
+function sendMessage(stringBuilder: any) {
     const msg = stringBuilder.toString();
     const web = new WebClient(options.token);
     (async () => {
