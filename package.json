@@ -9,6 +9,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc"
   },
+  "bin": {
+    "vue-slint": "./build/index.js"
+  },
   "keywords": [
     "slack",
     "vuecli",
@@ -21,9 +24,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@slack/client": "^4.10.0",
+    "@slack/client": "^4.11.0",
+    "@types/node": "^11.11.1",
     "command-line-args": "^5.0.2",
-    "minimist": "^1.2.0",
-    "string-builder": "^0.1.6"
+    "shelljs": "^0.8.3"
   }
 }
