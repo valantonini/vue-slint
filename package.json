@@ -1,7 +1,8 @@
 {
   "name": "vue-slint",
-  "version": "0.0.1",
-  "description": "Node package to parse the output of Vue's eslint and results to slack",
+  "version": "0.0.5",
+  "description": "Node package to run eslint/tslint on a git versioned VueCli project and send the results to slack tagging the last committer.",
+  "homepage": "https://github.com/valantonini/vue-slint",
   "main": "./build/index.js",
   "scripts": {
     "build": "tsc",
@@ -15,9 +16,14 @@
   "keywords": [
     "slack",
     "vuecli",
-    "lint"
+    "lint",
+    "eslint",
+    "tslint"
   ],
-  "author": "val antonini",
+  "author": {
+    "name": "val antonini",
+    "url": "https://valantonini.com"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/valantonini/vue-slint.git"

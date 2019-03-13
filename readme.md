@@ -1,6 +1,8 @@
 # Vue-Slint
 A tool to lint a VueCLI project and send the results to slack tagging the last committer.
 
+![sample](./sample/sample.png)
+
 ## Requirements:
 
 - vuecli (with eslint / tslint set up)

@@ -1,4 +1,4 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("@slack/client");
 var command_line_args_1 = __importDefault(require("command-line-args"));
@@ -84,53 +85,86 @@ if (!options.users) {
 }
 shelljs_1.default.cd(options.folder);
 var stylish = shelljs_1.default.exec("npx vue-cli-service lint --no-fix --format stylish", { silent: true }).stdout;
-if (stylish.includes("No lint errors found.")) {
-    sendMessage("No lint errors found.");
-    process.exit(0);
-}
-var userLookup = require(options.users);
-var fileReports = stylish
-    .split(/\n\s*\n/)
-    .map(function (file) {
-    var splitFile = file.split(os_1.EOL);
-    var splitHeading = splitFile[0].split(":");
-    var filename = splitHeading[0];
-    var dir = path_1.default.dirname(filename);
-    shelljs_1.default.cd(dir);
-    var lastCommitter = shelljs_1.default.exec("git log -n 1 --format=%cn " + filename, { silent: true }).stdout.trim();
-    var lastCommitterSlackId = userLookup[lastCommitter] || "";
-    return {
-        file: splitHeading[0],
-        errors: splitFile.slice(1),
-        lastCommitter: lastCommitter,
-        lastCommitterSlackId: lastCommitterSlackId ? "<" + lastCommitterSlackId + ">" : "",
-    };
-});
-var web = new client_1.WebClient(options.token);
-for (var _i = 0, fileReports_1 = fileReports; _i < fileReports_1.length; _i++) {
-    var fileReport = fileReports_1[_i];
-    var msg = "";
-    msg += "*" + fileReport.file + "* " + fileReport.lastCommitterSlackId + " " + os_1.EOL;
-    msg += "```" + os_1.EOL;
-    msg += fileReport.errors.join(os_1.EOL);
-    msg += os_1.EOL;
-    msg += "```" + os_1.EOL;
-    sendMessage(msg);
-}
-function sendMessage(message) {
-    var _this = this;
+if (stylish.includes("No lint errors")) {
     (function () { return __awaiter(_this, void 0, void 0, function () {
-        var res;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, web.chat.postMessage({ text: message, channel: options.channel, type: "mrkdwn", link_names: true })];
+                case 0: return [4 /*yield*/, sendMessage("No lint errors found")
+                        .catch(function (err) { return console.error(err); })];
                 case 1:
-                    res = (_a.sent());
-                    if (res.error) {
-                        console.error(res.error);
-                    }
+                    _a.sent();
                     return [2 /*return*/];
             }
         });
     }); })();
+}
+else {
+    var userLookup_1 = require(options.users);
+    var fileReports = stylish
+        .split(/\n\s*\n/)
+        .map(function (file) {
+        var splitFile = file.split(os_1.EOL);
+        var splitHeading = splitFile[0].split(":");
+        var filename = splitHeading[0];
+        var dir = path_1.default.dirname(filename);
+        shelljs_1.default.cd(dir);
+        var lastCommitter = shelljs_1.default.exec("git log -n 1 --format=%cn " + filename, { silent: true }).stdout.trim();
+        var lastCommitterSlackId = userLookup_1[lastCommitter] || "";
+        return {
+            file: splitHeading[0],
+            errors: splitFile.slice(1),
+            lastCommitter: lastCommitter,
+            lastCommitterSlackId: lastCommitterSlackId ? "<" + lastCommitterSlackId + ">" : "",
+        };
+    });
+    var _loop_1 = function (fileReport) {
+        var msg = "";
+        msg += "*" + fileReport.file + "* " + fileReport.lastCommitterSlackId + " " + os_1.EOL;
+        msg += "```" + os_1.EOL;
+        msg += fileReport.errors.join(os_1.EOL);
+        msg += os_1.EOL;
+        msg += "```" + os_1.EOL;
+        (function () { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, sendMessage(msg)
+                            .catch(function (err) { return console.error(err); })];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        }); })();
+    };
+    for (var _i = 0, fileReports_1 = fileReports; _i < fileReports_1.length; _i++) {
+        var fileReport = fileReports_1[_i];
+        _loop_1(fileReport);
+    }
+}
+function sendMessage(message) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve, reject) {
+                    var web = new client_1.WebClient(options.token);
+                    (function () { return __awaiter(_this, void 0, void 0, function () {
+                        var res;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, web.chat.postMessage({ text: message, channel: options.channel, type: "mrkdwn", link_names: true })];
+                                case 1:
+                                    res = (_a.sent());
+                                    if (res.error) {
+                                        reject(res.error);
+                                    }
+                                    else {
+                                        resolve("OK");
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); })();
+                })];
+        });
+    });
 }
