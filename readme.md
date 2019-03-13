@@ -3,7 +3,7 @@
 
 A tool to lint a VueCLI project and send the results to slack tagging the last committer.
 
-![sample](./sample/sample.png)
+![sample](https://raw.githubusercontent.com/valantonini/vue-slint/master/sample/sample.png)
 
 ## Requirements:
 
