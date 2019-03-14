@@ -2,3 +2,4 @@ tsconfig.json
 .DS_STORE
 *.code-workspace
 src/*
+.token

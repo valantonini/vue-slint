@@ -1,7 +1,7 @@
 {
   "name": "vue-slint",
-  "version": "0.0.6",
-  "description": "Node package to run eslint/tslint on a git versioned VueCli project and send the results to slack tagging the last committer.",
+  "version": "0.0.7",
+  "description": "Runs eslint/tslint on a git versioned VueCli project and send the results to slack tagging the last committer.",
   "homepage": "https://github.com/valantonini/vue-slint",
   "main": "./build/index.js",
   "scripts": {
@@ -31,8 +31,10 @@
   "license": "MIT",
   "dependencies": {
     "@slack/client": "^4.11.0",
+    "@types/command-line-usage": "^5.0.1",
     "@types/node": "^11.11.1",
     "command-line-args": "^5.0.2",
+    "command-line-usage": "^5.0.5",
     "shelljs": "^0.8.3"
   }
 }

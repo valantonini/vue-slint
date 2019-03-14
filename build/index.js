@@ -42,31 +42,67 @@ var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("@slack/client");
 var command_line_args_1 = __importDefault(require("command-line-args"));
+var command_line_usage_1 = __importDefault(require("command-line-usage"));
 var shelljs_1 = __importDefault(require("shelljs"));
 var os_1 = require("os");
 var path_1 = __importDefault(require("path"));
+var fs_1 = __importDefault(require("fs"));
 var optionDefinitions = [{
         name: "token",
         alias: "t",
-        type: String
+        type: String,
+        description: "Slack token for posting to Slack"
     },
     {
         name: "channel",
         alias: "c",
-        type: String
+        type: String,
+        description: "Slack channel to post to"
     },
     {
         name: "folder",
         alias: "f",
-        type: String
+        type: String,
+        typeLabel: "{underline folder}",
+        description: "A VueCLI project with linting configured",
     },
     {
         name: "users",
         alias: "u",
-        type: String
+        type: String,
+        typeLabel: "{underline file}",
+        description: "JSON file mapping git username to slack handle"
+    },
+    {
+        name: "version",
+        alias: "v",
+        type: Boolean,
+    },
+    {
+        name: "help",
+        alias: "h",
+        type: Boolean
     }
 ];
 var options = command_line_args_1.default(optionDefinitions);
+if (options.version) {
+    console.log("0.0.7");
+    process.exit(0);
+}
+if (options.help) {
+    var usage = command_line_usage_1.default([
+        {
+            header: "Example usage",
+            content: "vue-slint --token xoxb-111111111111-222222222222-abcDef5H1jkLmno9qRSTuvWX --channel my-slack-channel -folder ~/Source/MyVueCliProject -u ~/Source/MyVueCliProject/slackUsers.json"
+        },
+        {
+            header: "Options",
+            optionList: optionDefinitions
+        }
+    ]);
+    console.log(usage);
+    process.exit(0);
+}
 if (!options.token) {
     console.error("--token is required");
     process.exit(1);
@@ -79,8 +115,16 @@ if (!options.folder) {
     console.error("--folder is required");
     process.exit(1);
 }
+if (!fs_1.default.existsSync(options.folder)) {
+    console.error("VueCli project " + options.folder + " is not a valid directory");
+    process.exit(1);
+}
 if (!options.users) {
     console.error("--users is required");
+    process.exit(1);
+}
+if (!fs_1.default.existsSync(options.users)) {
+    console.error("Users file " + options.users + " doesn't exist");
     process.exit(1);
 }
 shelljs_1.default.cd(options.folder);
@@ -110,6 +154,9 @@ else {
         shelljs_1.default.cd(dir);
         var lastCommitter = shelljs_1.default.exec("git log -n 1 --format=%cn " + filename, { silent: true }).stdout.trim();
         var lastCommitterSlackId = userLookup_1[lastCommitter] || "";
+        lastCommitterSlackId = lastCommitterSlackId.length && lastCommitterSlackId[0] !== "@"
+            ? "@" + lastCommitterSlackId
+            : lastCommitterSlackId;
         return {
             file: splitHeading[0],
             errors: splitFile.slice(1),

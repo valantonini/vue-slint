@@ -2,33 +2,72 @@
 
 import { WebClient } from "@slack/client";
 import CommandLineArgs from "command-line-args";
+import CommandLineUsage from "command-line-usage";
 import shell from "shelljs";
 import { EOL } from 'os';
 import path from "path";
+import fs from "fs";
 
 const optionDefinitions = [{
     name: "token",
     alias: "t",
-    type: String
+    type: String,
+    description: "Slack token for posting to Slack"
 },
 {
     name: "channel",
     alias: "c",
-    type: String
+    type: String,
+    description: "Slack channel to post to"
 },
 {
     name: "folder",
     alias: "f",
-    type: String
+    type: String,
+    typeLabel: "{underline folder}",
+    description: "A VueCLI project with linting configured",
 },
 {
     name: "users",
     alias: "u",
-    type: String
+    type: String,
+    typeLabel: "{underline file}",
+    description: `JSON file mapping git username to slack handle`
+},
+{
+    name: "version",
+    alias: "v",
+    type: Boolean,
+},
+{
+    name: "help",
+    alias: "h",
+    type: Boolean
 }
 ];
 
 const options = CommandLineArgs(optionDefinitions)
+
+if (options.version) {
+    console.log("0.0.7");
+    process.exit(0);
+}
+
+if (options.help) {
+
+    const usage = CommandLineUsage([
+        {
+            header: "Example usage",
+            content: "vue-slint --token xoxb-111111111111-222222222222-abcDef5H1jkLmno9qRSTuvWX --channel my-slack-channel -folder ~/Source/MyVueCliProject -u ~/Source/MyVueCliProject/slackUsers.json"
+        },
+        {
+            header: "Options",
+            optionList: optionDefinitions
+        }
+    ])
+    console.log(usage);
+    process.exit(0);
+}
 
 if (!options.token) {
     console.error("--token is required");
@@ -45,8 +84,18 @@ if (!options.folder) {
     process.exit(1);
 }
 
+if(!fs.existsSync(options.folder)){
+    console.error(`VueCli project ${options.folder} is not a valid directory`);
+    process.exit(1);
+}
+
 if (!options.users) {
     console.error("--users is required");
+    process.exit(1);
+}
+
+if(!fs.existsSync(options.users)){
+    console.error(`Users file ${options.users} doesn't exist`);
     process.exit(1);
 }
 
@@ -69,7 +118,11 @@ else {
             const dir = path.dirname(filename);
             shell.cd(dir);
             const lastCommitter = shell.exec(`git log -n 1 --format=%cn ${filename}`, { silent: true }).stdout.trim();
-            const lastCommitterSlackId = userLookup[lastCommitter] || "";
+            let lastCommitterSlackId = userLookup[lastCommitter] || "";
+            lastCommitterSlackId = lastCommitterSlackId.length && lastCommitterSlackId[0] !== "@"
+                ? `@${lastCommitterSlackId}`
+                : lastCommitterSlackId;
+
             return {
                 file: splitHeading[0],
                 errors: splitFile.slice(1),
