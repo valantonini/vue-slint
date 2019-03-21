@@ -1,6 +1,6 @@
 {
   "name": "vue-slint",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Runs eslint/tslint on a git versioned VueCli project and send the results to slack tagging the last committer.",
   "homepage": "https://github.com/valantonini/vue-slint",
   "main": "./build/index.js",
