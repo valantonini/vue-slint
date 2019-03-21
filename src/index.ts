@@ -112,8 +112,8 @@ else {
     const fileReports = stylish
         .split(/\n\s*\n/)
         .map((file: string) => {
-            const splitFile = file.split(EOL);
-            const splitHeading = splitFile[0].split(":");
+            const splitFile = file.split(/\n/);
+            const splitHeading = splitFile[0].split(/:\d.*/);
             const filename = splitHeading[0];
             const dir = path.dirname(filename);
             shell.cd(dir);

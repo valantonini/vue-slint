@@ -147,8 +147,8 @@ else {
     var fileReports = stylish
         .split(/\n\s*\n/)
         .map(function (file) {
-        var splitFile = file.split(os_1.EOL);
-        var splitHeading = splitFile[0].split(":");
+        var splitFile = file.split(/\n/);
+        var splitHeading = splitFile[0].split(/:\d.*/);
         var filename = splitHeading[0];
         var dir = path_1.default.dirname(filename);
         shelljs_1.default.cd(dir);
