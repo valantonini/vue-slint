@@ -1,7 +1,8 @@
 # vue-slint
+
 [![Build Status](https://travis-ci.org/valantonini/vue-slint.svg?branch=master)](https://travis-ci.org/valantonini/vue-slint)
-[![npm version](https://badge.fury.io/js/vue-slint.svg)](https://badge.fury.io/js/vue-slint)
-![npm](https://img.shields.io/npm/dt/vue-slint.svg?style=plastic)
+![npm](https://img.shields.io/npm/v/vue-slint.svg)
+![npm](https://img.shields.io/npm/dt/vue-slint.svg)
 
 A tool to lint a VueCLI project and send the results to slack tagging the last committer.
 

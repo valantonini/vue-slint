@@ -3,6 +3,13 @@ node_js:
   - "10"
 install:
   - npm install typescript -g
-  -  npm install
+  - npm install
 script:
   - npm run build
+deploy:
+  provider: npm
+  email: ${NPM_EMAIL}
+  api_key: ${NPM_TOKEN}
+  on:
+    tags: true
+    branch: master
